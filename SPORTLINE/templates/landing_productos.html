@@ -1,0 +1,306 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo }}</title>
+
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- ICONOS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* ====== ESTILOS SOLO PARA LA CARD ====== */
+
+        /* Colores personalizados */
+        :root {
+            --gold-dark: #be6a0f;
+            --gold-light: #bf9803;
+        }
+
+        /* Card */
+        .card {
+            border: 2px solid var(--gold-dark);
+            border-radius: 12px;
+            background: #ffffff;
+            transition: 0.25s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 15px rgba(190, 106, 15, 0.35);
+            border-color: var(--gold-light);
+        }
+
+        /* Badge categoría */
+        .badge-categoria {
+            background-color: var(--gold-dark) !important;
+            color: #fff !important;
+        }
+
+        /* Badge oferta */
+        .badge-oferta {
+            background-color: var(--gold-light) !important;
+            color: #000 !important;
+            font-weight: bold;
+        }
+
+        /* Precio */
+        .price-tag {
+            font-weight: bold;
+            color: var(--gold-dark) !important;
+        }
+
+        /* Botón “Añadir al carrito” */
+        .btn-card {
+            background-color: var(--gold-dark);
+            border-color: var(--gold-dark);
+            color: #fff;
+        }
+
+        .btn-card:hover {
+            background-color: var(--gold-light);
+            border-color: var(--gold-light);
+            color: #000;
+        }
+
+        body {
+            background-color: #f4f4f4;
+        }
+
+        .navbar-brand span {
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .square-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+        }
+
+        .badge-categoria {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .price-tag {
+            font-weight: bold;
+            color: #198754;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            transition: 0.2s;
+        }
+
+        /* Pantalla completa del loader */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+
+        /* Imagen ocupando TODA la pantalla sin deformarse */
+        .loader-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* NO se deforma */
+            animation: fade 1.5s ease-in-out infinite;
+        }
+
+        /* Animación opcional */
+        @keyframes fade {
+            0% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <body>
+        <!-- LOADER PNG -->
+        <div id="loader" class="loader-overlay">
+            <img src="{% static 'catalogo/carga.jpg' %}" alt="Cargando..." class="loader-img">
+        </div>
+
+        <!-- HEADER (BANNER PRIMERO) -->
+        <header class="position-relative text-white mb-0">
+            <header class="position-relative text-white mb-0">
+                <img src="{% static 'catalogo/banner_sportline.webp' %}" alt="Catálogo Sportline"
+                    class="img-fluid w-100" style="height: auto; width: 100%; display: block;">
+
+                <!-- Capa oscura MUY SUAVE (puedes quitarla si tu banner ya es oscuro) -->
+                <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0,0,0,0.25);">
+                </div>
+
+                <!-- Texto centrado -->
+                <div class="position-absolute top-50 start-50 translate-middle text-center">
+                    <h1 class="mb-1">
+                        <i class="fa-solid fa-bolt me-2"></i>CATÁLOGO SPORTLINE
+                    </h1>
+                    <p class="mb-0">{{ slogan }}</p>
+                </div>
+            </header>
+
+            <!-- NAVBAR (DEBAJO DEL BANNER) -->
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+                <div class="container">
+                    <a class="navbar-brand d-flex align-items-center" href="{% url 'landing_catalogo' %}">
+                        <i class="fa-solid fa-dumbbell me-2"></i>
+                        <span>SPORTLINE</span>
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                        <!-- FILTROS -->
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                            <!-- Todos -->
+                            <li class="nav-item">
+                                <a class="nav-link {% if not filtro_actual %}active{% endif %}"
+                                    href="{% url 'landing_catalogo' %}">
+                                    <i class="fa-solid fa-list-ul me-1"></i> Todos
+                                </a>
+                            </li>
+
+                            <!-- Tipos dinámicos -->
+                            {% for t in tipos %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if filtro_actual == t %}active{% endif %}"
+                                    href="{% url 'landing_catalogo' %}?tipo={{ t }}">
+                                    <i class="fa-solid fa-tag me-1"></i> {{ t|capfirst }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- CARRITO -->
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a href="{% url 'carrito' %}" class="nav-link position-relative">
+                                    <i class="fa-solid fa-cart-shopping fa-lg"></i>
+                                    {% if cantidad_items > 0 %}
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ cantidad_items }}
+                                    </span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </nav>
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="container py-5">
+
+                <div class="row g-4">
+
+                    {% for p in productos %}
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card h-100 shadow-sm">
+
+                            <img src="{% static p.imagen %}" class="square-img" alt="{{ p.nombre }}">
+
+                            <div class="card-body d-flex flex-column">
+
+                                <h5 class="card-title mb-1">{{ p.nombre }}</h5>
+
+                                <span class="badge bg-secondary badge-categoria mb-2">
+                                    <i class="fa-solid fa-layer-group me-1"></i> {{ p.categoria }}
+                                </span>
+
+                                <p class="small text-muted">{{ p.descripcion }}</p>
+
+                                {% if p.color %}
+                                <p class="mb-1"><strong>Color:</strong> {{ p.color }}</p>
+                                {% endif %}
+
+                                {% if p.talla %}
+                                <p class="mb-1"><strong>Tallas:</strong> {{ p.talla }}</p>
+                                {% endif %}
+
+                                {# PRECIO CON OFERTA (SI APLICA) #}
+                                {% if p.precio_oferta %}
+                                <!-- Precio anterior tachado -->
+                                <p class="mb-1">
+                                    <span class="text-muted text-decoration-line-through">
+                                        <i class="fa-solid fa-dollar-sign me-1"></i>{{ p.precio|floatformat:2 }}
+                                    </span>
+                                </p>
+                                <!-- Precio de oferta -->
+                                <p class="price-tag mb-3">
+                                    <i class="fa-solid fa-dollar-sign me-1"></i>{{ p.precio_oferta|floatformat:2 }}
+                                    <span class="badge badge-oferta ms-2">OFERTA</span>
+                                </p>
+                                {% else %}
+                                <!-- Precio normal sin oferta -->
+                                <p class="price-tag mb-3">
+                                    <i class="fa-solid fa-dollar-sign me-1"></i>{{ p.precio|floatformat:2 }}
+                                </p>
+                                {% endif %}
+
+                                <!-- ÚNICO BOTÓN -->
+                                <div class="mt-auto">
+                                    <a href="{% url 'agregar_carrito' p.id %}" class="btn btn-card w-100">
+                                        <i class="fa-solid fa-cart-plus me-1"></i>Añadir al carrito
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-warning text-center">
+                            No hay productos en esta categoría.
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <script>
+                // Ocultar loader después de 3 segundos
+                setTimeout(() => {
+                    document.getElementById("loader").style.display = "none";
+                }, 1000);
+            </script>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+
+</html>
